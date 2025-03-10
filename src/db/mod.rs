@@ -37,13 +37,17 @@ pub async fn insert_or_update_departure(client: &Client, departure: &Departure, 
 }
 
 pub async fn insert_or_update_train_station(client: &Client, station: &TrainStationResponse) -> Result<(), Error> {
-    client.execute(
-        "INSERT INTO train_stations (station_code, station_name, date, time_of_day, request_time) VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT (station_code) DO UPDATE SET station_name = EXCLUDED.station_name, date = EXCLUDED.date, time_of_day = EXCLUDED.time_of_day, request_time = EXCLUDED.request_time",
-        &[&station.station_code, &station.station_name, &station.date, &station.time_of_day, &station.request_time],
-    ).await?;
-    for departure in &station.departures.all {
-        insert_or_update_departure(client, departure, &station.station_code).await?;
+    if let Some(station_code) = &station.station_code {
+        client.execute(
+            "INSERT INTO train_stations (station_code, station_name, date, time_of_day, request_time) VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (station_code) DO UPDATE SET station_name = EXCLUDED.station_name, date = EXCLUDED.date, time_of_day = EXCLUDED.time_of_day, request_time = EXCLUDED.request_time",
+            &[&station_code, &station.station_name, &station.date, &station.time_of_day, &station.request_time],
+        ).await?;
+        if let Some(departures) = &station.departures {
+            for departure in &departures.all {
+                insert_or_update_departure(client, departure, station_code).await?;
+            }
+        }
     }
     Ok(())
 }
