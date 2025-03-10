@@ -31,15 +31,17 @@ impl DataSource {
         DataSource
     }
 
+    // toma una ruta de archivo y devuelve un Result que contiene un vector de registros AllopathicRecord o un error
     pub fn read_allopathic_csv<P: AsRef<Path>>(&self, path: P) -> Result<Vec<AllopathicRecord>, Box<dyn Error>> {
-        let file = File::open(path)?;
-        let mut rdr = csv::Reader::from_reader(file);
-        let mut records = Vec::new();
+        let file = File::open(path)?; //abre el archivo en la ruta especificada
+        let mut rdr = csv::Reader::from_reader(file); //crea un lector CSV a partir del archivo
+        let mut records = Vec::new(); //crea un vector mutable para almacenar los registros
         for result in rdr.deserialize() {
-            let record: AllopathicRecord = result?;
-            records.push(record);
+            // itera sobre los registros deserializados
+            let record: AllopathicRecord = result?; //deserializa el registro
+            records.push(record); //agrega el registro al vector
         }
-        Ok(records)
+        Ok(records) //devuelve el vector de registros
     }
 
 }
