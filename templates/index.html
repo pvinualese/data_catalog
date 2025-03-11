@@ -7,7 +7,7 @@
     <h1>Tables in PostgreSQL</h1>
     <ul>
         {% for table in tables %}
-            <li>{{ table }}</li>
+            <li><a href="/table/{{ table }}">{{ table }}</a></li>
         {% endfor %}
     </ul>
 </body>

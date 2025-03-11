@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data in {{ table_name }}</title>
+</head>
+<body>
+    <h1>Data in {{ table_name }}</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                {% for column, _ in data[0] %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for _, value in row %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/">Back to table list</a>
+    <pre>{{ data | json_encode }}</pre> <!-- Mensaje de depuración -->
+</body>
+</html> 
